@@ -17,7 +17,7 @@ public:
 	//getters
 	std::string getName() const;
 	std::string getDescription() const;
-	std::string getMessage(int i) const;
+	std::string getMessage() const;
 
 	//setters
 	void setName(const std::string &newName);
