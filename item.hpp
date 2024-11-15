@@ -29,7 +29,6 @@ class Item
 
 		
 		//overloaded stream operator
-		// its throwing error that no return for non void type
 		friend std::ostream& operator<<(std::ostream& stream, const Item& other){
 			stream << other.name << "(" << other.cal << " calories) - "; 
 			stream << other.weight << "lb";
