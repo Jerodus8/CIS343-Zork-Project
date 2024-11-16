@@ -18,6 +18,7 @@ private:
 	std::string name;
 	std::string desc;
 	std::vector<std::string> messages;
+	mutable size_t message_num;
 public: 
 	NPC();
 	NPC(const std::string &name, const std::string &desc);
