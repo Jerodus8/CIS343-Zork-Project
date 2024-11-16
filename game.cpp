@@ -135,3 +135,11 @@ void NPC::addMessage(const std::string &message){
 void NPC::updateMessage(int i, const std::string &newMessage){
 	this->messages[i] = newMessage;
 }
+
+
+
+//################ Locations ###############
+Location::Location(){
+	this->name = "Default location";
+	this->desc = "This is the default location";
+}	
