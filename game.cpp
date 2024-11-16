@@ -102,14 +102,17 @@ NPC::NPC(const std::string &name, const std::string &desc){
 	this->desc = desc;
 	std::vector<std::string> m;
 	this->messages = m;
+	this->message_num = 0;
 }
-
+dfddasdf
 
 //getters
 std::string NPC::getName() const{return this->name;}
 std::string NPC::getDescription() const{return this->desc;}
 std::string NPC::getMessage() const{
-	return 0;
+	m = this->messages[this->message_num++];
+	if (this->message_num >= this.messages.size()) this->message_num = 0;
+	return m;
 }
 //setters
 void NPC::setName(const std::string &newName){
