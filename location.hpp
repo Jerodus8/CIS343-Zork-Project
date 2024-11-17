@@ -33,7 +33,7 @@ public:
         //getters
         std::string getName() const;
         std::string getDescription() const;
-        bool getVisited();
+        bool getVisited() const;
         std::map<std::string, Location> getLocations();
         std::vector<Item> getItems();
         std::vector<NPC> getNPCs();

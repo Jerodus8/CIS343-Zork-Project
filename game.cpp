@@ -136,11 +136,11 @@ void NPC::addMessage(const std::string &message){
 	this->messages.push_back(message);
 }
 void NPC::updateMessage(int i, const std::string &newMessage){
-	if (message.empty()){
+	if (messages.empty()){
 		throw std::invalid_argument("NPC messages cannot be blank");  
 	}
 	if(i < 0 || i >= messages.size()){
-		throw std::out_of_range("Message index out of range")
+		throw std::out_of_range("Message index out of range");
 	}
 	this->messages[i] = newMessage;
 }
@@ -161,35 +161,35 @@ Location::Location(){
    	this->npcs = npcs;
 }	
 //getters
-std::string getName() const{
+std::string Location::getName() const{
 	return this->name;
 }
-std::string getDescription() const{
+std::string Location::getDescription() const{
 	return this->desc;
 }
-bool getVisited () const{
+bool Location::getVisited() const{
 	return this->visited;
 }
-std::map<std::string, Location> getLocations (){
+std::map<std::string, Location> Location::getLocations (){
 	return this->neighbors;
 }
-std::vector<Item> getItems(){
-	this->items;
+std::vector<Item> Location::getItems(){
+	return this->items;
 }
         
 //setters
-void setName(const std::string &name){
+void Location::setName(const std::string &name){
 	this->name = name;
 }
-void setDescription(const std::string &desc){
+void Location::setDescription(const std::string &desc){
 	this->desc = desc;
 }
-void setVisited(bool v){
+void Location::setVisited(bool v){
 	this->visited = v;
 }
-void addItem(Item item){
+void Location::addItem(Item item){
 	this->items.push_back(item);
 }
-void addNPC(NPC npc){
+void Location::addNPC(NPC npc){
 	this->npcs.push_back(npc);
 }
