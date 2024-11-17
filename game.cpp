@@ -193,3 +193,25 @@ void Location::addItem(Item item){
 void Location::addNPC(NPC npc){
 	this->npcs.push_back(npc);
 }
+
+
+
+
+/*
+* Adds the location into the map with the provided direction string.
+* If the string is blank, it raises an exception.
+* If the key already exists in the map, it raises an exception.
+*/
+void Location::addLocation(std::string direction, Location location) {
+    if (direction.empty()) {
+        throw std::invalid_argument("Direction cannot be blank.");
+    }
+
+    // Check if the direction already exists in the map
+    if (neighbors.find(direction) != neighbors.end()) {
+        throw std::invalid_argument("Direction already exists in the map.");
+    }
+
+    // Add the new direction and location to the map
+    neighbors[direction] = location;
+}

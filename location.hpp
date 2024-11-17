@@ -44,14 +44,7 @@ public:
         void setVisited(bool v);
         void addItem(Item item);
         void addNPC(NPC npc);
-
-	/*
-	 * Adds the location into the map with the provided direction string.
-	 * If the string is blank, it raises an exception. 
-	 * If the key already exists in the map, it raises an exception.
-	 */
-
-	//void addLocation(string direction, Location location);
+	void addLocation(std::string direction, Location location);
 
 
 };
