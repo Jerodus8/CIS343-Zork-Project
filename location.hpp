@@ -46,6 +46,49 @@ public:
         void addNPC(NPC npc);
 	void addLocation(std::string direction, Location location);
 
+	// Overloaded operator
+	friend std::ostream& operator<<(std::ostream& stream, const Location& location){
+	    // Start with the location name and description
+	    stream << location.name << " - " << location.desc << "\n";
 
+	    // Add the NPCs
+	    stream << "You see the following NPCs:\n";
+	    if (location.npcs.empty()) {
+		stream << "- None\n";
+	    } else {
+		for (const auto& npc : location.npcs) {
+		    stream << "- " << npc << "\n"; // Using NPC overloaded <<
+		}
+	    }
+
+	    // Add the Items
+	    stream << "You see the following Items:\n";
+	    if (location.items.empty()) {
+		stream << "- None\n";
+	    } else {
+		for (const auto& item : location.items) {
+		    stream << "- " << item << "\n"; // Using the Item overloaded <<
+		}
+	    }
+
+	    // Add the Directions and Neighbors
+	    stream << "You can go in the following Directions:\n";
+	    if (location.neighbors.empty()) {
+		stream << "- None\n";
+	    } else {
+		for (const auto& neighbor : location.neighbors) {
+		    const auto& direction = neighbor.first;
+		    const auto& neighborLocation = neighbor.second;
+		    stream << "- " << direction << " - " << neighborLocation.getName();
+		    if (neighborLocation.getVisited()) {
+			stream << " (Visited)";
+		    } else {
+			stream << " (Unknown)";
+		    }
+		    stream << "\n";
+		}
+	    }
+	    return stream;
+	}
 };
 #endif
