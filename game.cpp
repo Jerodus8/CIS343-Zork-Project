@@ -130,9 +130,18 @@ void NPC::setDescription(const std::string &newDesc){
 	this->desc = newDesc;
 }
 void NPC::addMessage(const std::string &message){
+	if (message.empty()){
+		throw std::invalid_argument("NPC messages cannot be blank");  
+	}
 	this->messages.push_back(message);
 }
 void NPC::updateMessage(int i, const std::string &newMessage){
+	if (message.empty()){
+		throw std::invalid_argument("NPC messages cannot be blank");  
+	}
+	if(i < 0 || i >= messages.size()){
+		throw std::out_of_range("Message index out of range")
+	}
 	this->messages[i] = newMessage;
 }
 
@@ -142,4 +151,45 @@ void NPC::updateMessage(int i, const std::string &newMessage){
 Location::Location(){
 	this->name = "Default location";
 	this->desc = "This is the default location";
+	this->visited = false;
+    //map<direction, Location>, very similar to dict
+    std::map<std::string, Location> neighbors;
+    std::vector<Item> items;
+    std::vector<NPC> npcs;
+   	this->neighbors = neighbors;
+   	this->items = items;
+   	this->npcs = npcs;
 }	
+//getters
+std::string getName() const{
+	return this->name;
+}
+std::string getDescription() const{
+	return this->desc;
+}
+bool getVisited () const{
+	return this->visited;
+}
+std::map<std::string, Location> getLocations (){
+	return this->neighbors;
+}
+std::vector<Item> getItems(){
+	this->items;
+}
+        
+//setters
+void setName(const std::string &name){
+	this->name = name;
+}
+void setDescription(const std::string &desc){
+	this->desc = desc;
+}
+void setVisited(bool v){
+	this->visited = v;
+}
+void addItem(Item item){
+	this->items.push_back(item);
+}
+void addNPC(NPC npc){
+	this->npcs.push_back(npc);
+}
