@@ -17,8 +17,7 @@
 class Game {
 private:
     // Map of commands (command name -> function)
-    std::map<std::string, std::function<void(std::vector<std::string>)>> commands;
-
+    std::map<std::string, std::function<void(*)(std::vector<std::string>)> commands;
     // Player's inventory and weight
     std::vector<Item> inventory;
     int currentWeight;
@@ -36,7 +35,7 @@ private:
     bool gameInProgress;
 
     // Helper function to set up commands
-    std::map<std::string, std::function<void(std::vector<std::string>)>> setup_commands();
+    std::map<std::string, void(*)(std::vector<std::string>)> setupCommands();
 
     // Creates the world (locations, items, NPCs)
     void createWorld();
