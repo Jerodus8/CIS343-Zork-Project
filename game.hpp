@@ -16,43 +16,45 @@
 
 class Game {
 private:
-    // Map of commands (command name -> function)
-    std::map<std::string, std::function<void(*)(std::vector<std::string>)> commands;
-    // Player's inventory and weight
-    std::vector<Item> inventory;
-    int currentWeight;
+	// Map of commands (command name -> function)
+	
+	
+	
+	std::map<std::string, std::function<void(std::vector<std::string>)>> commands;
+	// Player's inventory and weight
+	std::vector<Item> inventory;
+	int currentWeight;
 
-    // Locations in the world
-    std::vector<Location> locations;
+	// Locations in the world
+	std::vector<Location> locations;
 
-    // Current location of the player
-    Location currentLocation;
+	// Current location of the player
+	Location currentLocation;
 
-    // Calories the player needs to collect
-    int caloriesNeeded;
+	// Calories the player needs to collect
+	int caloriesNeeded;
 
-    // Game status
-    bool gameInProgress;
+	// Game status
+	bool gameInProgress;
 
-    // Helper function to set up commands
-    std::map<std::string, void(*)(std::vector<std::string>)> setupCommands();
+	// TODO ---- Create helper function to set up commands aka setupCommands()
 
-    // Creates the world (locations, items, NPCs)
-    void createWorld();
+	// Creates the world (locations, items, NPCs)
+	void createWorld();
 
-    // Selects a random location
-    Location randomLocation();
+	// Selects a random location
+	Location randomLocation();
 
-    // Command functions
-    void showHelp(std::vector<std::string> target);
-    void talk(std::vector<std::string> target);
-    void meet(std::vector<std::string> target);
-    void take(std::vector<std::string> target);
-    void give(std::vector<std::string> target);
-    void go(std::vector<std::string> target);
-    void showItems(std::vector<std::string> target);
-    void look(std::vector<std::string> target);
-    void quit(std::vector<std::string> target);
+	// Command functions
+	void showHelp(std::vector<std::string> target);
+	void talk(std::vector<std::string> target);
+	void meet(std::vector<std::string> target);
+	void take(std::vector<std::string> target);
+	void give(std::vector<std::string> target);
+	void go(std::vector<std::string> target);
+	void showItems(std::vector<std::string> target);
+	void look(std::vector<std::string> target);
+	void quit(std::vector<std::string> target);
 
 public:
     Game(); // Constructor

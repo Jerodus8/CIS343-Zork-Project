@@ -5,7 +5,7 @@
 
 */
 
-
+#include <sstream> // for the tokenizer
 #include <iostream>
 #include <stdexcept>
 #include "item.hpp"    
@@ -216,7 +216,10 @@ void Location::addLocation(std::string direction, Location location) {
 
 Game::Game() {
     // Initialize the map of commands
-    commands = setupCommands();
+    //
+    //
+    // TODO --- uncomment this line when setupCommands() is done
+    //commands = setupCommands();
 
     // Create the world and set the initial values for game variables
     createWorld();
@@ -249,23 +252,7 @@ void Game::createWorld() {
 }
 
 
-// Setup commands with function mappings
-std::map<std::string, void(*)(std::vector<std::string>)> Game::setupCommands() {
-	std::map<std::string, std::function<void(*)(std::vector<std::string>)> commands;
-	// Add commands and their corresponding functions
-	commands["show help"] = showHelp;
-	commands["help"] = showHelp; // Alias for the original command
-	commands["take"] = take;
-	commands["give"] = give;
-	commands["go"] = go;
-	commands["look"] = look;
-	commands["talk"] = talk;
-	commands["quit"] = quit;
-	commands["show items"] = showItems;
-
-	return commands;
-}
-
+// TODO ---- add the setupCommands() function
 
 
 // Randomly select a Location
@@ -274,30 +261,43 @@ Location Game::randomLocation() {
 	return locations[index];
 }
 
+// Helper method to split commands into tokens
+std::vector<std::string> split(const std::string& str, char delimiter = ' ') {
+	std::vector<std::string> tokens;
+	std::istringstream stream(str);
+	std::string token;
+	while (std::getline(stream, token, delimiter)) {
+		tokens.push_back(token);
+	}
+	return tokens;
+}
+
+
+
 // Play method to run the game loop
 void Game::play() {
 	std::cout << "Welcome to the game!\n";
 	showHelp({});
 
 	while (gameInProgress) {
-		std::string input;
+		std::string userResponse;
 		std::cout << "What is your command? ";
-		std::getline(std::cin, input);
+		std::getline(std::cin, userResponse);
 
-		std::vector<std::string> tokens = input.split(); // Split input into tokens
+		std::vector<std::string> tokens = split(userResponse); // Split input into tokens
 		std::string command = tokens[0];
 		tokens.erase(tokens.begin()); // Remove the command from tokens
         
 		if (commands.find(command) != commands.end()) {
-		    commands[command](tokens); // Call the function associated with the command
+			commands[command](tokens); // Call the function associated with the command
 		} else {
-		    std::cout << "Invalid command! Type 'help' for a list of commands.\n";
+			std::cout << "Invalid command! Type 'help' for a list of commands.\n";
 		}
 
 		// End game condition check
 		if (caloriesNeeded <= 0) {
-		    std::cout << "Elf has saved the campus! You win!\n";
-		    gameInProgress = false;
+			std::cout << "Elf has saved the campus! You win!\n";
+			gameInProgress = false;
 		}
     	}
 }
@@ -307,7 +307,7 @@ void Game::play() {
 void Game::showHelp(std::vector<std::string> target) {
 	std::cout << "Available commands:\n";
 	for (const auto& pair : commands) {
-	std::cout << "- " << pair.first << "\n";
+		std::cout << "- " << pair.first << "\n";
 	}
 	
 	// Print current time
@@ -323,7 +323,7 @@ void Game::take(std::vector<std::string> target) {
 		return;
 	}
 
-	std::string item_name = target[0]; // Assume the target is the item name
+	std::string item_name = target[0];
 	bool item_found = false;
 
 	for (auto& item : currentLocation.getItems()) {
@@ -342,6 +342,12 @@ void Game::take(std::vector<std::string> target) {
 }
 
 // Command to give an item to the NPC or location
+
+
+//TODO ---- fix code
+//its not perfect code we need to look at the docs and check if we are in the woods
+//some compilation issue with the inventory erase func not sure why
+
 void Game::give(std::vector<std::string> target) {
 	if (target.empty()) {
 		std::cout << "Give what?\n";
@@ -355,8 +361,9 @@ void Game::give(std::vector<std::string> target) {
 		if (item.getName() == item_name) {
 			currentLocation.addItem(item);
 			currentWeight -= item.getWeight();
+			// check if we are in the woods
+			
 			inventory.erase(std::remove(inventory.begin(), inventory.end(), item), inventory.end());
-
 			std::cout << "You have given the " << item_name << " to the location.\n";
 			item_found = true;
 			break;
