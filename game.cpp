@@ -226,6 +226,8 @@ Game::Game() {
     //commands = setupCommands();
 
     // Set default values
+    std::vector<Item> inv;
+    this->inventory = inv;
     this->currentLocation = this->randomLocation();
     this->currentWeight = 0;
     this->caloriesNeeded = 1000;

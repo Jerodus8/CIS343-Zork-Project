@@ -17,8 +17,7 @@
 class Game {
 private:
 	// Map of commands (command name -> function)
-	
-	
+
 	
 	std::map<std::string, std::function<void(std::vector<std::string>)>> commands;
 	// Player's inventory and weight
