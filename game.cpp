@@ -195,7 +195,7 @@ void Location::addNPC(NPC npc){
 * If the string is blank, it raises an exception.
 * If the key already exists in the map, it raises an exception.
 */
-void Location::addLocation(std::string direction, Location location) {
+void Location::addLocation(std::string direction, Location &location) {
     if (direction.empty()) {
         throw std::invalid_argument("Direction cannot be blank.");
     }
@@ -216,46 +216,171 @@ void Location::addLocation(std::string direction, Location location) {
 
 Game::Game() {
 
-
-    // Create the world and set the initial values for game variables
-    this->createWorld();
-	// Initialize the map of commands
-    //
-    //
-    // TODO --- uncomment this line when setupCommands() is done
-    //commands = setupCommands();
-
-    // Set default values
+    // Set default values, Create the world and set the initial values for game variables
     std::vector<Item> inv;
+    std::vector<Location> loc;
     this->inventory = inv;
-    this->currentLocation = this->randomLocation();
+    this->locations = loc;
     this->currentWeight = 0;
     this->caloriesNeeded = 1000;
     this->gameInProgress = true;
+
+    this->createWorld();
+
+    this->currentLocation = this->randomLocation();
+    commands = setupCommands();
 }
 
 
 
 // Create the world with Locations, Items, and NPCs
 void Game::createWorld() {
-    // Example:
-    //Location kirkhoff_upstairs("kirkhoff upstairs", "The student union. There are restaurants, a store, and places to congregate.");
-    //Item rusty_sword("rusty sword", "A rusty old sword.", 50, 5.0f);
-    //NPC ball_of_light("ball of light", "A glowing orb of light.");
-    //kirkhoff_upstairs.addItem(rusty_sword);
-    //kirkhoff_upstairs.addNPC(ball_of_light);
-    
-    // Add more locations, items, NPCs, and set neighbors...
-    
-    // Add locations to the world
-    // example:
-    // locations.push_back(kirkhoff_upstairs);
+  	//create locations, link locations, create items/NPCs, place items/NPCs in locations, add locations to locations vector. 
 
-    // Game creation here \/ :)
+    //create locations
+	Location pac("Performing Art Center", "The music building. There are practice rooms, classrooms, and a performance hall.");
+	Location kirkoff("Kirkhoff Center", "The student union. There are restaurants, a store, and places to congregate.");;
+	Location library("Mary Idema Pew Library", "Books! Books! Get your books here! There are lots of places to study here.");
+	Location zumberge("Zumberge Hall", "Business business business... numbers... is this working??");
+	Location clockTower("The Clock Tower", "Ding Dong Ding Dong... Ding Dong Ding Dong... Time to get to class! ");
+	Location transLink("Transformational Link Sculpture", "They say if you walk underneath, you'll fail your exams!");
+	Location blueBridge("Blue Bridge", "Caution bridge may be icy.");
+	Location mak("Mackinac Hall", "Why are all my classes in the same building? This place is a labrynth");
+
+
+	//link locations
+	pac.addLocation("east", kirkoff);
+	pac.addLocation("south", zumberge);
+	kirkoff.addLocation("west", pac);
+	kirkoff.addLocation("east", library);
+	kirkoff.addLocation("south", clockTower);
+	library.addLocation("west", kirkoff);
+	zumberge.addLocation("north", pac);
+	zumberge.addLocation("east", clockTower);
+	zumberge.addLocation("south", transLink);
+	clockTower.addLocation("north", kirkoff);
+	clockTower.addLocation("west", zumberge);
+	transLink.addLocation("north", zumberge);
+	transLink.addLocation("south", blueBridge);
+	blueBridge.addLocation("north", transLink);
+	blueBridge.addLocation("south", mak);
+	mak.addLocation("north", blueBridge);
+
+
+	//create items
+	Item practiceSheetMusic("Practice Sheet Music", "A set of sheet music for a challenging piece. You can practice it to improve your musical skills.", 0, 0.2f);
+	Item kirkhoffSnack("Snack from Java City", "A quick snack from the Java City cafe. It's a small boost to your energy.", 150, 0.1f);
+	Item studyGuide("Study Guide", "A study guide filled with key points from your course. Perfect for last-minute cramming!", 0, 0.3f);
+	Item businessTextbook("Business Textbook", "A heavy business textbook, full of charts, graphs, and numbers. It’s difficult to carry but full of useful information.", 0, 10.5f);
+	Item clockTowerKey("Clock Tower Key", "A key to the Clock Tower. It’s said to open a mysterious room where time stands still.", 0, 0.05f);
+	Item goodLuckCharm("Good Luck Charm", "A charm given to you by someone who walked under the sculpture. It is rumored to protect you from bad luck in exams.", 0, 0.1f);
+	Item winterCoat("Winter Coat", "A warm winter coat perfect for the cold winds that sweep across the Blue Bridge. It’ll keep you warm and safe on icy days.", 0, 1.2f);
+	Item labyrinthMap("Labyrinth Map", "A crumpled map of Mackinac Hall. With so many confusing corridors, this map will help you navigate through the labyrinth.", 0, 0.1f);
+	Item chowMein("Stale Chow Mein", "Tasty and filling Stir-fried noodles from Panda Express, but it looks a little like cardboard.", 150, 0.3f);
+	Item subSandwich("Boney Billy Sandwich", "A basic submarine sandwich loaded with turkey, lettuce, tomato, and mayo, all served on a soft french roll.", 600, 0.5f);
+	Item hanburgur("Hanburgur", "Hanburgur. https://tinyurl.com/hanburgur", 700, 0.5f);
+
+	//place items
+	zumberge.addItem(businessTextbook);
+	pac.addItem(practiceSheetMusic);
+	kirkoff.addItem(kirkhoffSnack);
+	library.addItem(studyGuide);
+	mak.addItem(hanburgur);
+	transLink.addItem(transLink);
+	library.addItem(labyrinthMap);
+	kirkoff.addItem(winterCoat);
+	clockTower.addLocation(chowMein);
+	pac.addItem(subSandwich);
+
+	//create NPCs
+
+	//Philomena Mantella (President Mantella)
+	NPC mantella("Philomena Mantella", "Philomena Mantella, the glamorous yet secretively sinister president of the university. She rules with an iron fist, using her wealth and influence to manipulate everyone around her.");
+    mantella.addMessage("You are merely a pawn in my grand design!");
+    mantella.addMessage("Isn't it nice to have power and money? You wouldn't understand.");
+    mantella.addMessage("You think the university cares about students? It's all about the profits!");
+    mantella.addMessage("Oh, you want to change things? How cute. It's too late for that.");
+    mantella.addMessage("Careful what you say around me, student. I have ways of making things disappear.");
+
+    //Louie the Laker
+	NPC louie("Louie the Laker", 
+    "Louie the Laker, the school's proud mascot. He's a big, muscly laker man full of energy and spirit. "
+    "Known for his towering presence, he's always ready to get the crowd fired up!");
+
+	// Add dialogue options for Louie the Laker
+	louie.addMessage("Let's go Lakers! We're number one!");
+	louie.addMessage("You ready to show some school spirit? Get pumped!");
+	louie.addMessage("You want to win this game? Just channel your inner Laker!");
+	louie.addMessage("Don't forget, it's not just about academics—it's about heart, determination, and team spirit!");
+	louie.addMessage("You need a cheer to get going? I've got plenty of those!");
+
+	//Dr. Woodring
+	NPC woodring("Dr. Woodring", 
+	    "Dr. Woodring, the professor of Structure of Programming Languages. He's a scholar of the intricacies and theories behind "
+	    "programming languages, from syntax and semantics to parsing and compilers. His passion for the subject is evident, but he’s "
+	    "known for his demanding lectures and high expectations. A challenging but rewarding professor.");
+
+	// Add dialogue options for Dr. Woodring
+	woodring.addMessage("Well that's as different as a caterpillar from an ostrich.");
+	woodring.addMessage("Ah yes, you do deserve extra credit for your C++ project.");
+	woodring.addMessage("Hanburgur.");
+	woodring.addMessage("Why don't you turn to your neighbor and see if they have any questions.")
+
+	// Define NPC: Burger King Man
+	NPC burgerKingMan("Burger King Man", 
+	    "Burger King Man, the bizarre and unsettling figure who roams the campus dressed in a giant Burger King crown. "
+	    "With an enigmatic, often cryptic smile, he's known for making strange appearances at unexpected times. No one quite knows why he's here, "
+	    "but his oddball behavior always leaves an impression.");
+
+	// Add dialogue options for Burger King Man
+	burgerKingMan.addMessage("I drop my hanburgur :/ Help me find it.");
+	burgerKingMan.addMessage("The king’s orders are simple: You must embrace the flame-grilled goodness.");
+	burgerKingMan.addMessage("I rule the land of fast food, where every burger is fit for royalty.");
+	burgerKingMan.addMessage("Did you know? The secret ingredient is always... mystery.");
+	burgerKingMan.addMessage("Bow before the crown, for I am the Burger King Man, the true ruler of flavor.");
+	burgerKingMan.addMessage("You don’t want to know what happens when the flame dies out... *shudder*");
+
+
+	// Define NPC: Magic Elf (Quest version)
+	NPC magicElf("Elandor the Magic Elf", 
+	    "Elandor, a mischievous and wise magic elf, is the last hope to save the school from an ancient curse. "
+	    "In order to restore balance and protect the school, you must feed him enough sustenance. His magic requires a certain amount of calories, "
+	    "and only then will he reveal the secrets to stopping the curse. But he is a picky eater, and not all food is suitable for his powers.");
+
+	// Add dialogue options for Magic Elf
+	magicElf.addMessage("Ah, you’ve come to feed me, I see. But only the finest food will do for my magic!");
+	magicElf.addMessage("To save the school, you must feed me well. Only when I am fully nourished will I grant you the power to break the curse.");
+	magicElf.addMessage("Do you think a simple sandwich will suffice? Try harder, mortal.");
+	magicElf.addMessage("Calories are not just numbers; they are the fuel that powers magic. Bring me more, and I will share my knowledge with you.");
+	magicElf.addMessage("The more you feed me, the stronger I become... and the closer you come to saving your school.");
+	magicElf.addMessage("Each bite I take, your hopes grow stronger. But beware, overfeeding could cause unexpected effects.");
+	magicElf.addMessage("I sense you are struggling... Do not give up. The fate of the school rests on your hands... and your food.");
+
+	//place NPCs
+	mak.addNPC(woodring);
+	transLink.addNPC(burgerKingMan);
+	zumberge.addNPC(mantella);
+	clockTower.addNPC(louie);
+
+
+
+	//add locations to locations vector
+	this->locations.push_back[pac];
+	this->locations.push_back[kirkoff];
+	this->locations.push_back[library];
+	this->locations.push_back[zumberge];
+	this->locations.push_back[clockTower];
+	this->locations.push_back[transLink];
+	this->locations.push_back[blueBridge];
+	this->locations.push_back[mak];
+
+	l = this->randomLocation();
+	l.addNPC(magicElf);
+	this->elfLocation = l;
 }
 
 
-// TODO ---- add the setupCommands() function
+
 using Command = std::function<void(std::vector<std::string>)>; // Function type alias
 using CommandMap = std::map<std::string, Command>;
 
@@ -309,7 +434,7 @@ CommandMap Game::setupCommands(){
 
 // Randomly select a Location
 Location Game::randomLocation() {
-	int index = rand() % locations.size(); // Select a random index
+	int index = rand() % this->locations.size(); // Select a random index
 	return this->locations[index];
 }
 
@@ -351,7 +476,7 @@ void Game::play() {
 			std::cout << "Elf has saved the campus! You win!\n";
 			this->gameInProgress = false;
 		}
-    	}
+    }
 }
 
 
@@ -370,6 +495,7 @@ void Game::showHelp(std::vector<std::string> target) {
 
 // Command to take an item
 void Game::take(std::vector<std::string> target) {
+	throw std::logic_error("Function needs to remove items from the location. Implement Location.removeItem()")
 	if (target.empty()) {
 		std::cout << "Take what?\n";
 		return;
@@ -398,7 +524,6 @@ void Game::take(std::vector<std::string> target) {
 
 //TODO ---- fix code
 //its not perfect code we need to look at the docs and check if we are in the woods
-//some compilation issue with the inventory erase func not sure why
 
 void Game::give(std::vector<std::string> target) {
 	if (target.empty()) {
