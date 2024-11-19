@@ -215,20 +215,21 @@ void Location::addLocation(std::string direction, Location location) {
 
 
 Game::Game() {
-    // Initialize the map of commands
+
+
+    // Create the world and set the initial values for game variables
+    this->createWorld();
+	// Initialize the map of commands
     //
     //
     // TODO --- uncomment this line when setupCommands() is done
     //commands = setupCommands();
 
-    // Create the world and set the initial values for game variables
-    createWorld();
-
     // Set default values
-    currentLocation = randomLocation();
-    currentWeight = 0;
-    caloriesNeeded = 1000;
-    gameInProgress = true;
+    this->currentLocation = this->randomLocation();
+    this->currentWeight = 0;
+    this->caloriesNeeded = 1000;
+    this->gameInProgress = true;
 }
 
 
@@ -253,12 +254,61 @@ void Game::createWorld() {
 
 
 // TODO ---- add the setupCommands() function
+using Command = std::function<void(std::vector<std::string>)>; // Function type alias
+using CommandMap = std::map<std::string, Command>;
 
+CommandMap Game::setupCommands(){
+	/*
+		Chat GPT gave us the alternative command vectors for this function.
+	*/
+	CommandMap commands; //create an empty map
+
+	// Using lambdas to bind member functions
+	commands["help"] = [this](std::vector<std::string> target)	{ showHelp(target); };
+	commands["talk"] = [this](std::vector<std::string> target)	{ talk(target); };
+	commands["meet"] = [this](std::vector<std::string> target)	{ meet(target); };
+	commands["take"] = [this](std::vector<std::string> target)	{ take(target); };
+	commands["give"] = [this](std::vector<std::string> target)	{ give(target); };
+	commands["go"] = [this](std::vector<std::string> target)  	{ go(target); };
+	commands["showItems"] = [this](std::vector<std::string> target){ showItems(target); };
+	commands["look"] = [this](std::vector<std::string> target)	{ look(target); };
+	commands["quit"] = [this](std::vector<std::string> target)	{ quit(target); };
+
+	//create alternatives words for each command
+	std::vector<std::string> help_commands = {"?", "h", "how", "commands", "showCommands", "Help", "HELP", "info", "instructions", "guide"};//all assigned to showHelp()
+	for (const std::string& c : help_commands) { commands[c] = commands["help"]; }
+
+	std::vector<std::string> talk_commands = {"talk", "speak", "chat", "converse", "discuss", "say", "ask", "dialogue"}; //all assigned to talk()
+	for (const std::string& c : talk_commands) { commands[c] = commands["talk"]; }
+
+	std::vector<std::string> meet_commands = {"meet", "greet", "encounter", "introduce", "sayHello", "connect", "meetUp", "join"};
+	for (const std::string& c : meet_commands) { commands[c] = commands["meet"]; }
+
+	std::vector<std::string> take_commands = {"take", "grab", "pick", "collect", "obtain", "get", "acquire"}; //all assigned to take()
+	for (const std::string& c : take_commands) { commands[c] = commands["take"]; }
+
+	std::vector<std::string> give_commands = {"give", "donate", "present", "offer", "hand", "pass", "transfer"}; //all assigned to give()
+	for (const std::string& c : give_commands) { commands[c] = commands["give"]; }
+
+	std::vector<std::string> go_commands = {"go", "move", "travel", "head", "leave", "walk", "advance", "proceed", "run"}; //all assigned to go()
+	for (const std::string& c : go_commands) { commands[c] = commands["go"]; }
+
+	std::vector<std::string> showItems_commands = {"showItems", "inventory", "items", "possessions", "things", "belongings", "checkItems"}; //all assigned to showItems()
+	for (const std::string& c : showItems_commands) { commands[c] = commands["showItems"]; }
+
+	std::vector<std::string> look_commands = {"look", "see", "view", "examine", "observe", "inspect", "search", "checkOut"}; //all assigned to look()
+	for (const std::string& c : look_commands) { commands[c] = commands["look"]; }
+
+	std::vector<std::string> quit_commands = {"quit", "exit", "leave", "end", "close", "stop", "terminate", "abandon"}; //all assigned to quit()
+	for (const std::string& c : quit_commands) { commands[c] = commands["quit"]; }
+	
+	return commands;
+}
 
 // Randomly select a Location
 Location Game::randomLocation() {
 	int index = rand() % locations.size(); // Select a random index
-	return locations[index];
+	return this->locations[index];
 }
 
 // Helper method to split commands into tokens
@@ -277,9 +327,9 @@ std::vector<std::string> split(const std::string& str, char delimiter = ' ') {
 // Play method to run the game loop
 void Game::play() {
 	std::cout << "Welcome to the game!\n";
-	showHelp({});
+	this->showHelp({});
 
-	while (gameInProgress) {
+	while (this->gameInProgress) {
 		std::string userResponse;
 		std::cout << "What is your command? ";
 		std::getline(std::cin, userResponse);
@@ -289,15 +339,15 @@ void Game::play() {
 		tokens.erase(tokens.begin()); // Remove the command from tokens
         
 		if (commands.find(command) != commands.end()) {
-			commands[command](tokens); // Call the function associated with the command
+			this->commands[command](tokens); // Call the function associated with the command
 		} else {
 			std::cout << "Invalid command! Type 'help' for a list of commands.\n";
 		}
 
 		// End game condition check
-		if (caloriesNeeded <= 0) {
+		if (this->caloriesNeeded <= 0) {
 			std::cout << "Elf has saved the campus! You win!\n";
-			gameInProgress = false;
+			this->gameInProgress = false;
 		}
     	}
 }
@@ -326,13 +376,13 @@ void Game::take(std::vector<std::string> target) {
 	std::string item_name = target[0];
 	bool item_found = false;
 
-	for (auto& item : currentLocation.getItems()) {
+	for (auto& item : this->currentLocation.getItems()) {
 		if (item.getName() == item_name) {
 			inventory.push_back(item);
-			currentWeight += item.getWeight();
+			this->currentWeight += item.getWeight();
 			std::cout << "You have taken the " << item_name << ".\n";
 			item_found = true;
-		break;
+			break;
 		}
 	}
 
@@ -359,8 +409,8 @@ void Game::give(std::vector<std::string> target) {
 
 	for (auto& item : inventory) {
 		if (item.getName() == item_name) {
-			currentLocation.addItem(item);
-			currentWeight -= item.getWeight();
+			this->currentLocation.addItem(item);
+			this->currentWeight -= item.getWeight();
 			// check if we are in the woods
 			
 			inventory.erase(std::remove(inventory.begin(), inventory.end(), item), inventory.end());
@@ -383,11 +433,11 @@ void Game::go(std::vector<std::string> target) {
 	}
 
 	std::string direction = target[0];
-	auto neighbors = currentLocation.getLocations();
+	auto neighbors = this->currentLocation.getLocations();
 
 	if (neighbors.find(direction) != neighbors.end()) {
-		currentLocation = neighbors[direction]; // Move to new location
-		std::cout << "You are now at " << currentLocation.getName() << ".\n";
+		this->currentLocation = neighbors[direction]; // Move to new location
+		std::cout << "You are now at " << this->currentLocation.getName() << ".\n";
 	} else {
 		std::cout << "There is no path in that direction.\n";
 	}
@@ -395,7 +445,7 @@ void Game::go(std::vector<std::string> target) {
 
 // Command to look around in the current location
 void Game::look(std::vector<std::string> target) {
-	std::cout << currentLocation << "\n"; // Uses overloaded << operator for Location
+	std::cout << this->currentLocation << "\n"; // Uses overloaded << operator for Location
 }
 
 // Command to talk to an NPC
@@ -406,7 +456,7 @@ void Game::talk(std::vector<std::string> target) {
 	}
 
 	std::string npc_name = target[0];
-	for (auto& npc : currentLocation.getNPCs()) {
+	for (auto& npc : this->currentLocation.getNPCs()) {
 		if (npc.getName() == npc_name) {
 			std::cout << npc.getMessage() << "\n";
 			return;
@@ -422,12 +472,12 @@ void Game::showItems(std::vector<std::string> target) {
 	for (const auto& item : inventory) {
 		std::cout << item << "\n";
 	}
-	std::cout << "Total weight: " << currentWeight << " lbs\n";
+	std::cout << "Total weight: " << this->currentWeight << " lbs\n";
 }
 
 // Command to quit the game
 void Game::quit(std::vector<std::string> target) {
 	std::cout << "Thank you for playing. Goodbye!\n";
-	gameInProgress = false;
+	this->gameInProgress = false;
 }
 
