@@ -29,6 +29,9 @@ private:
 
 	// Current location of the player
 	Location currentLocation;
+	
+	//location of the elf
+	Location elfLocation;
 
 	// Calories the player needs to collect
 	int caloriesNeeded;
@@ -36,10 +39,11 @@ private:
 	// Game status
 	bool gameInProgress;
 
-	// TODO ---- Create helper function to set up commands aka setupCommands()
-
 	// Creates the world (locations, items, NPCs)
 	void createWorld();
+
+	//sets up all commands
+	std::map<std::string, std::function<void(std::vector<std::string>)>> setupCommands();
 
 	// Selects a random location
 	Location randomLocation();
