@@ -28,7 +28,7 @@ private:
 public:
         //constructor
         Location();
-        Location(const std::string &name, const std::string &desc, bool visited = false);
+        Location(const std::string &name, const std::string &desc);
 
         //getters
         std::string getName() const;
@@ -43,8 +43,9 @@ public:
         void setDescription(const std::string &desc);
         void setVisited(bool v);
         void addItem(Item item);
+		void removeItem(Item item);
         void addNPC(NPC npc);
-	void addLocation(std::string direction, Location& location);
+		void addLocation(std::string direction, Location& location);
 
 	// Overloaded operator
 	friend std::ostream& operator<<(std::ostream& stream, const Location& location){

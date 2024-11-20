@@ -153,10 +153,10 @@ Location::Location(){
    	this->items = items;
    	this->npcs = npcs;
 }
-Location::Location(const std::string &name, const std::string &desc, bool visited = false){
+Location::Location(const std::string &name, const std::string &desc){
 	this->name = name;
 	this->desc = desc;
-	this->visited = visited;
+	this->visited = false;
     //map<direction, Location>, very similar to dict
     std::map<std::string, Location> neighbors;
     std::vector<Item> items;
@@ -181,6 +181,9 @@ std::map<std::string, Location> Location::getLocations (){
 std::vector<Item> Location::getItems(){
 	return this->items;
 }
+std::vector<NPC> Location::getNPCs(){
+	return this->npcs;
+}
         
 //setters
 void Location::setName(const std::string &name){
@@ -198,7 +201,22 @@ void Location::addItem(Item item){
 void Location::addNPC(NPC npc){
 	this->npcs.push_back(npc);
 }
-
+//Command to remove items from a location
+void Location::removeItem(Item item){
+	bool item_found = false;
+	name = item.getName();
+	for (auto& i : this->items) {
+		if (name == i.getName()){
+			item_found = true;
+			break;
+		}
+	}
+	if(item_found){
+		this->items.erase(std::remove(this->items.begin(), this->items.end(), item), this->items.end());
+	}else{
+		throw std::invalid_argument("Location.items does not contain item parameter");
+	}
+}
 
 
 
@@ -515,20 +533,23 @@ void Game::take(std::vector<std::string> target) {
 
 	std::string item_name = target[0];
 	bool item_found = false;
-
+	Item chosen_item;
 	for (auto& item : this->currentLocation.getItems()) {
 		if (item.getName() == item_name) {
 			this->inventory.push_back(item);
 			this->currentWeight += item.getWeight();
 			std::cout << "You have taken the " << item_name << ".\n";
 			item_found = true;
+			chosen_item = item;
 			break;
 		}
 	}
-
 	if (!item_found) {
 		std::cout << "Item not found in this location.\n";
+		return;
 	}
+	this->currentLocation.removeItem(chosen_item);
+	
 }
 
 // Command to give an item to the NPC or location
@@ -542,7 +563,6 @@ void Game::give(std::vector<std::string> target) {
 		std::cout << "Give what?\n";
 		return;
 	}
-
 	std::string item_name = target[0]; // Assume the target is the item name
 	bool item_found = false;
 	Item chosen_item;
@@ -551,18 +571,17 @@ void Game::give(std::vector<std::string> target) {
 			this->currentLocation.addItem(item);
 			this->currentWeight -= item.getWeight();
 			// check if we are in the woods
-			
-			this->inventory.erase(std::remove(this->inventory.begin(), this->inventory.end(), item), this->inventory.end());
+			chosen_item = item;
 			std::cout << "You have given the " << item_name << " to the location.\n";
 			item_found = true;
 			break;
 		}
 	}
-
 	if (!item_found) {
 		std::cout << "Item not found in your inventory.\n";
 		return;
 	}
+	this->inventory.erase(std::remove(this->inventory.begin(), this->inventory.end(), chosen_item), this->inventory.end());
 }
 
 // Command to move to a different location
@@ -587,7 +606,21 @@ void Game::go(std::vector<std::string> target) {
 void Game::look(std::vector<std::string> target) {
 	std::cout << this->currentLocation << "\n"; // Uses overloaded << operator for Location
 }
-
+//Command get the description of target npc
+void Game::meet(std::vector<std::string> target){
+	if (target.empty()) {
+		std::cout << "Meet who?\n";
+		return;
+	}
+	std::string npc_name = target[0];
+	for (auto& npc : this->currentLocation.getNPCs()) {
+		if (npc.getName() == npc_name) {
+			std::cout << npc.getDescription() << "\n";
+			return;
+		}
+	}
+	std::cout << "NPC not found in this location.\n";
+}
 // Command to talk to an NPC
 void Game::talk(std::vector<std::string> target) {
 	if (target.empty()) {
@@ -614,7 +647,6 @@ void Game::showItems(std::vector<std::string> target) {
 	}
 	std::cout << "Total weight: " << this->currentWeight << " lbs\n";
 }
-
 // Command to quit the game
 void Game::quit(std::vector<std::string> target) {
 	std::cout << "Thank you for playing. Goodbye!\n";
