@@ -132,7 +132,7 @@ void NPC::updateMessage(int i, const std::string &newMessage){
 	if (messages.empty()){
 		throw std::invalid_argument("NPC messages cannot be blank");  
 	}
-	if(i < 0 || i >= messages.size()){
+	if(i < 0 || i >= (int) messages.size()){
 		throw std::out_of_range("Message index out of range");
 	}
 	this->messages[i] = newMessage;
@@ -145,6 +145,18 @@ Location::Location(){
 	this->name = "Default location";
 	this->desc = "This is the default location";
 	this->visited = false;
+    //map<direction, Location>, very similar to dict
+    std::map<std::string, Location> neighbors;
+    std::vector<Item> items;
+    std::vector<NPC> npcs;
+   	this->neighbors = neighbors;
+   	this->items = items;
+   	this->npcs = npcs;
+}
+Location::Location(const std::string &name, const std::string &desc, bool visited = false){
+	this->name = name;
+	this->desc = desc;
+	this->visited = visited;
     //map<direction, Location>, very similar to dict
     std::map<std::string, Location> neighbors;
     std::vector<Item> items;
@@ -506,7 +518,7 @@ void Game::take(std::vector<std::string> target) {
 
 	for (auto& item : this->currentLocation.getItems()) {
 		if (item.getName() == item_name) {
-			inventory.push_back(item);
+			this->inventory.push_back(item);
 			this->currentWeight += item.getWeight();
 			std::cout << "You have taken the " << item_name << ".\n";
 			item_found = true;
@@ -533,15 +545,14 @@ void Game::give(std::vector<std::string> target) {
 
 	std::string item_name = target[0]; // Assume the target is the item name
 	bool item_found = false;
-
-	for (auto& item : inventory) {
+	Item chosen_item;
+	for (auto& item : this->inventory) {
 		if (item.getName() == item_name) {
 			this->currentLocation.addItem(item);
 			this->currentWeight -= item.getWeight();
 			// check if we are in the woods
 			
-			inventory.erase(std::remove(inventory.begin(), inventory.end(), item), inventory.end()
-);
+			this->inventory.erase(std::remove(this->inventory.begin(), this->inventory.end(), item), this->inventory.end());
 			std::cout << "You have given the " << item_name << " to the location.\n";
 			item_found = true;
 			break;
@@ -550,6 +561,7 @@ void Game::give(std::vector<std::string> target) {
 
 	if (!item_found) {
 		std::cout << "Item not found in your inventory.\n";
+		return;
 	}
 }
 
