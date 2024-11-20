@@ -43,13 +43,15 @@ class Item
 		friend std::ostream& operator<<(std::ostream& stream, const Item& other){
 			stream << other.name << "(" << other.cal << " calories) - "; 
 			stream << other.weight << "lb";
-			if (other.weight != 1){stream << "s";}
+			if (other.weight != 1){
+				stream << "s";
+			}
 			stream << " - " << other.desc;
 			return stream;
 		}
 
 		bool operator==(const Item& other) const {
-        return name == other.name; // Compare based on a unique attribute (e.g., name)
-    }	
+			return name == other.name; // Compare based on a unique attribute (e.g., name)
+    		}	
 };
 #endif

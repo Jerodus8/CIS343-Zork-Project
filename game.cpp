@@ -17,8 +17,12 @@
 
 
 int main(){
-
-
+	// If testing using g++ you have to first do g++ -o game game.cpp
+	// then call ./game to run the game
+	// Create an instance of game
+	Game game;
+	game.play();
+	return 0;
 }
 
 //################ Items ################## 
@@ -483,12 +487,12 @@ std::vector<std::string> split(const std::string& str, char delimiter = ' ') {
 
 // Play method to run the game loop
 void Game::play() {
-	std::cout << "Welcome to the game!\n";
+	std::cout << "Welcome to the game!\n" << std::endl;
 	this->showHelp({});
 
 	while (this->gameInProgress) {
 		std::string userResponse;
-		std::cout << "What is your command? ";
+		std::cout << "What is your command? "  << std::endl;
 		std::getline(std::cin, userResponse);
 
 		std::vector<std::string> tokens = split(userResponse); // Split input into tokens
@@ -498,12 +502,12 @@ void Game::play() {
 		if (commands.find(command) != commands.end()) {
 			this->commands[command](tokens); // Call the function associated with the command
 		} else {
-			std::cout << "Invalid command! Type 'help' for a list of commands.\n";
+			std::cout << "Invalid command! Type 'help' for a list of commands.\n" << std::endl;
 		}
 
 		// End game condition check
 		if (this->caloriesNeeded <= 0) {
-			std::cout << "Elf has saved the campus! You win!\n";
+			std::cout << "Elf has saved the campus! You win!\n" << std::endl;
 			this->gameInProgress = false;
 		}
     }
