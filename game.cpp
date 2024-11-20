@@ -195,7 +195,7 @@ void Location::addNPC(NPC npc){
 * If the string is blank, it raises an exception.
 * If the key already exists in the map, it raises an exception.
 */
-void Location::addLocation(std::string direction, Location &location) {
+void Location::addLocation(std::string direction, Location& location) {
     if (direction.empty()) {
         throw std::invalid_argument("Direction cannot be blank.");
     }
@@ -286,10 +286,10 @@ void Game::createWorld() {
 	kirkoff.addItem(kirkhoffSnack);
 	library.addItem(studyGuide);
 	mak.addItem(hanburgur);
-	transLink.addItem(transLink);
+	/*transLink.addItem(transLink);*/
 	library.addItem(labyrinthMap);
 	kirkoff.addItem(winterCoat);
-	clockTower.addLocation(chowMein);
+	clockTower.addItem(chowMein);
 	pac.addItem(subSandwich);
 
 	//create NPCs
@@ -324,7 +324,7 @@ void Game::createWorld() {
 	woodring.addMessage("Well that's as different as a caterpillar from an ostrich.");
 	woodring.addMessage("Ah yes, you do deserve extra credit for your C++ project.");
 	woodring.addMessage("Hanburgur.");
-	woodring.addMessage("Why don't you turn to your neighbor and see if they have any questions.")
+	woodring.addMessage("Why don't you turn to your neighbor and see if they have any questions.");
 
 	// Define NPC: Burger King Man
 	NPC burgerKingMan("Burger King Man", 
@@ -365,16 +365,16 @@ void Game::createWorld() {
 
 
 	//add locations to locations vector
-	this->locations.push_back[pac];
-	this->locations.push_back[kirkoff];
-	this->locations.push_back[library];
-	this->locations.push_back[zumberge];
-	this->locations.push_back[clockTower];
-	this->locations.push_back[transLink];
-	this->locations.push_back[blueBridge];
-	this->locations.push_back[mak];
+	this->locations.push_back(pac);
+	this->locations.push_back(kirkoff);
+	this->locations.push_back(library);
+	this->locations.push_back(zumberge);
+	this->locations.push_back(clockTower);
+	this->locations.push_back(transLink);
+	this->locations.push_back(blueBridge);
+	this->locations.push_back(mak);
 
-	l = this->randomLocation();
+	Location l = this->randomLocation();
 	l.addNPC(magicElf);
 	this->elfLocation = l;
 }
@@ -495,7 +495,7 @@ void Game::showHelp(std::vector<std::string> target) {
 
 // Command to take an item
 void Game::take(std::vector<std::string> target) {
-	throw std::logic_error("Function needs to remove items from the location. Implement Location.removeItem()")
+	throw std::logic_error("Function needs to remove items from the location. Implement Location.removeItem()");
 	if (target.empty()) {
 		std::cout << "Take what?\n";
 		return;
@@ -540,7 +540,8 @@ void Game::give(std::vector<std::string> target) {
 			this->currentWeight -= item.getWeight();
 			// check if we are in the woods
 			
-			inventory.erase(std::remove(inventory.begin(), inventory.end(), item), inventory.end());
+			inventory.erase(std::remove(inventory.begin(), inventory.end(), item), inventory.end()
+);
 			std::cout << "You have given the " << item_name << " to the location.\n";
 			item_found = true;
 			break;

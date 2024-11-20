@@ -46,6 +46,10 @@ class Item
 			if (other.weight != 1){stream << "s";}
 			stream << " - " << other.desc;
 			return stream;
-		}	
+		}
+
+		bool operator==(const Item& other) const {
+        return name == other.name; // Compare based on a unique attribute (e.g., name)
+    }	
 };
 #endif

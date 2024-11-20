@@ -44,7 +44,7 @@ public:
         void setVisited(bool v);
         void addItem(Item item);
         void addNPC(NPC npc);
-	void addLocation(std::string direction, Location location);
+	void addLocation(std::string direction, Location& location);
 
 	// Overloaded operator
 	friend std::ostream& operator<<(std::ostream& stream, const Location& location){
