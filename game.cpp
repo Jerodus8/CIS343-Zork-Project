@@ -4,7 +4,7 @@
 
 
 */
-
+#include <functional>
 #include <sstream> // for the tokenizer
 #include <iostream>
 #include <stdexcept>
@@ -149,26 +149,19 @@ Location::Location(){
 	this->name = "Default location";
 	this->desc = "This is the default location";
 	this->visited = false;
-    //map<direction, Location>, very similar to dict
-    std::map<std::string, Location> neighbors;
-    std::vector<Item> items;
-    std::vector<NPC> npcs;
-   	this->neighbors = neighbors;
-   	this->items = items;
-   	this->npcs = npcs;
+   	this->neighbors = std::map<std::string, std::reference_wrapper<Location>>();
+   	this->items = std::vector<Item>();
+   	this->npcs = std::vector<NPC>();
 }
 Location::Location(const std::string &name, const std::string &desc){
 	this->name = name;
 	this->desc = desc;
 	this->visited = false;
-    //map<direction, Location>, very similar to dict
-    std::map<std::string, Location> neighbors;
-    std::vector<Item> items;
-    std::vector<NPC> npcs;
-   	this->neighbors = neighbors;
-   	this->items = items;
-   	this->npcs = npcs;
+	this->neighbors = std::map<std::string, std::reference_wrapper<Location>>();
+        this->items = std::vector<Item>();
+        this->npcs = std::vector<NPC>();
 }	
+
 //getters
 std::string Location::getName() const{
 	return this->name;
@@ -179,9 +172,12 @@ std::string Location::getDescription() const{
 bool Location::getVisited() const{
 	return this->visited;
 }
-std::map<std::string, Location> Location::getLocations (){
-	return this->neighbors;
+
+std::map<std::string, std::reference_wrapper<Location>> Location::getLocations() const{
+	return neighbors;
 }
+
+
 std::vector<Item> Location::getItems(){
 	return this->items;
 }
@@ -229,18 +225,18 @@ void Location::removeItem(Item item){
 * If the string is blank, it raises an exception.
 * If the key already exists in the map, it raises an exception.
 */
-void Location::addLocation(std::string direction, Location& location) {
-    if (direction.empty()) {
-        throw std::invalid_argument("Direction cannot be blank.");
-    }
+void Location::addLocation(const std::string& direction, Location& location) {
+	if (direction.empty()) {
+		throw std::invalid_argument("Direction cannot be blank.");
+	}
 
-    // Check if the direction already exists in the map
-    if (neighbors.find(direction) != neighbors.end()) {
-        throw std::invalid_argument("Direction already exists in the map.");
-    }
+	// Check if the direction already exists in the map
+	if (neighbors.find(direction) != neighbors.end()) {
+		throw std::invalid_argument("Direction already exists in the map.");
+	}
 
-    // Add the new direction and location to the map
-    neighbors[direction] = location;
+	// Add the new direction and location to the map
+	neighbors[direction] = location;
 }
 
 
@@ -250,19 +246,19 @@ void Location::addLocation(std::string direction, Location& location) {
 
 Game::Game() {
 
-    // Set default values, Create the world and set the initial values for game variables
-    std::vector<Item> inv;
-    std::vector<Location> loc;
-    this->inventory = inv;
-    this->locations = loc;
-    this->currentWeight = 0;
-    this->caloriesNeeded = 1000;
-    this->gameInProgress = true;
+	// Set default values, Create the world and set the initial values for game variables
+	std::vector<Item> inv;
+	std::vector<Location> loc;
+	this->inventory = inv;
+	this->locations = loc;
+	this->currentWeight = 0;
+	this->caloriesNeeded = 1000;
+	this->gameInProgress = true;
 
-    this->createWorld();
+	this->createWorld();
 
-    this->currentLocation = this->randomLocation();
-    commands = setupCommands();
+	this->currentLocation = this->randomLocation();
+	commands = setupCommands();
 }
 
 
@@ -273,7 +269,7 @@ void Game::createWorld() {
 
     //create locations
 	Location pac("Performing Art Center", "The music building. There are practice rooms, classrooms, and a performance hall.");
-	Location kirkoff("Kirkhoff Center", "The student union. There are restaurants, a store, and places to congregate.");;
+	Location kirkoff("Kirkhoff Center", "The student union. There are restaurants, a store, and places to congregate.");
 	Location library("Mary Idema Pew Library", "Books! Books! Get your books here! There are lots of places to study here.");
 	Location zumberge("Zumberge Hall", "Business business business... numbers... is this working??");
 	Location clockTower("The Clock Tower", "Ding Dong Ding Dong... Ding Dong Ding Dong... Time to get to class! ");
@@ -330,11 +326,11 @@ void Game::createWorld() {
 
 	//Philomena Mantella (President Mantella)
 	NPC mantella("Philomena Mantella", "Philomena Mantella, the glamorous yet secretively sinister president of the university. She rules with an iron fist, using her wealth and influence to manipulate everyone around her.");
-    mantella.addMessage("You are merely a pawn in my grand design!");
-    mantella.addMessage("Isn't it nice to have power and money? You wouldn't understand.");
-    mantella.addMessage("You think the university cares about students? It's all about the profits!");
-    mantella.addMessage("Oh, you want to change things? How cute. It's too late for that.");
-    mantella.addMessage("Careful what you say around me, student. I have ways of making things disappear.");
+	mantella.addMessage("You are merely a pawn in my grand design!");
+	mantella.addMessage("Isn't it nice to have power and money? You wouldn't understand.");
+	mantella.addMessage("You think the university cares about students? It's all about the profits!");
+	mantella.addMessage("Oh, you want to change things? How cute. It's too late for that.");
+	mantella.addMessage("Careful what you say around me, student. I have ways of making things disappear.");
 
     //Louie the Laker
 	NPC louie("Louie the Laker", 
@@ -467,7 +463,8 @@ CommandMap Game::setupCommands(){
 }
 
 // Randomly select a Location
-Location Game::randomLocation() {
+// Location& to return a reference not a copy
+Location& Game::randomLocation() {
 	int index = rand() % this->locations.size(); // Select a random index
 	return this->locations[index];
 }

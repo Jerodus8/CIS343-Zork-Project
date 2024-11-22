@@ -8,6 +8,9 @@
 #ifndef __H__LOCATION__
 #define __H__LOCATION__
 
+
+
+#include <functional>
 #include <string>
 #include <map>
 #include "item.hpp"
@@ -19,8 +22,8 @@ private:
         std::string name;
 	std::string desc;
         //map<direction, Location>, very similar to dict
-        std::map<std::string, Location> neighbors;
-        std::vector<Item> items;
+        std::map<std::string, std::reference_wrapper<Location>> neighbors;
+	std::vector<Item> items;
         std::vector<NPC> npcs;
         bool visited;
 
@@ -34,8 +37,8 @@ public:
         std::string getName() const;
         std::string getDescription() const;
         bool getVisited() const;
-        std::map<std::string, Location> getLocations();
-        std::vector<Item> getItems();
+        std::map<std::string, std::reference_wrapper<Location>> getLocations() const;
+	std::vector<Item> getItems();
         std::vector<NPC> getNPCs();
 
         //setters
@@ -43,10 +46,9 @@ public:
         void setDescription(const std::string &desc);
         void setVisited(bool v);
         void addItem(Item item);
-		void removeItem(Item item);
+	void removeItem(Item item);
         void addNPC(NPC npc);
-		void addLocation(std::string direction, Location& location);
-
+	void addLocation(const std::string& direction, Location& location);
 	// Overloaded operator
 	friend std::ostream& operator<<(std::ostream& stream, const Location& location){
 	    // Start with the location name and description
@@ -79,7 +81,7 @@ public:
 	    } else {
 		for (const auto& neighbor : location.neighbors) {
 		    const auto& direction = neighbor.first;
-		    const auto& neighborLocation = neighbor.second;
+		    const auto& neighborLocation = neighbor.second.get();
 		    stream << "- " << direction << " - " << neighborLocation.getName();
 		    if (neighborLocation.getVisited()) {
 			stream << " (Visited)";

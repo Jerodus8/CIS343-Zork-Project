@@ -25,6 +25,7 @@ private:
 	int currentWeight;
 
 	// Locations in the world
+	// using pointers so to not store by copy
 	std::vector<Location> locations;
 
 	// Current location of the player
@@ -46,7 +47,7 @@ private:
 	std::map<std::string, std::function<void(std::vector<std::string>)>> setupCommands();
 
 	// Selects a random location
-	Location randomLocation();
+	Location& randomLocation();
 
 	// Command functions
 	void showHelp(std::vector<std::string> target);
