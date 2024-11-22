@@ -1,8 +1,7 @@
-/* add name
+/* This code was worked on by:
  * Joshua Johnson
- *
- *
- *
+ * Austin Jackson
+ * Jerod Muilenburg
  */
 
 

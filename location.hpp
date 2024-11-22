@@ -1,6 +1,7 @@
-/* add name
+/* 
  * Joshua Johnson
- *
+ * Austin Jackson
+ * Jerod Muilenburg
  */
 
 
@@ -19,35 +20,35 @@
 class Location
 {
 private:
-        std::string name;
+    std::string name;
 	std::string desc;
-        //map<direction, Location>, very similar to dict
-        std::map<std::string, std::reference_wrapper<Location>> neighbors;
+    //map<direction, Location>, very similar to dict
+    std::map<std::string, Location*> neighbors;
 	std::vector<Item> items;
-        std::vector<NPC> npcs;
-        bool visited;
+    std::vector<NPC> npcs;
+    bool visited;
 
 
 public:
-        //constructor
-        Location();
-        Location(const std::string &name, const std::string &desc);
+    //constructor
+    Location();
+    Location(const std::string &name, const std::string &desc);
 
-        //getters
-        std::string getName() const;
-        std::string getDescription() const;
-        bool getVisited() const;
-        std::map<std::string, std::reference_wrapper<Location>> getLocations() const;
+    //getters
+    std::string getName() const;
+    std::string getDescription() const;
+    bool getVisited() const;
+    std::map<std::string, Location*> getLocations() const;
 	std::vector<Item> getItems();
-        std::vector<NPC> getNPCs();
+    std::vector<NPC> getNPCs();
 
         //setters
-        void setName(const std::string &name);
-        void setDescription(const std::string &desc);
-        void setVisited(bool v);
-        void addItem(Item item);
+    void setName(const std::string &name);
+    void setDescription(const std::string &desc);
+    void setVisited(bool v);
+    void addItem(Item item);
 	void removeItem(Item item);
-        void addNPC(NPC npc);
+    void addNPC(NPC npc);
 	void addLocation(const std::string& direction, Location& location);
 	// Overloaded operator
 	friend std::ostream& operator<<(std::ostream& stream, const Location& location){
@@ -79,11 +80,10 @@ public:
 	    if (location.neighbors.empty()) {
 		stream << "- None\n";
 	    } else {
-		for (const auto& neighbor : location.neighbors) {
-		    const auto& direction = neighbor.first;
-		    const auto& neighborLocation = neighbor.second.get();
-		    stream << "- " << direction << " - " << neighborLocation.getName();
-		    if (neighborLocation.getVisited()) {
+		for (auto [direction, n] : location.neighbors) {
+		    const auto neighbor = *n;
+		    stream << "- " << direction << " - " << neighbor.getName();
+		    if (neighbor.getVisited()) {
 			stream << " (Visited)";
 		    } else {
 			stream << " (Unknown)";

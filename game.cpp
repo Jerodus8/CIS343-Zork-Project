@@ -1,16 +1,12 @@
-/* add name here
- Joshua Johnson
-
-
-
-*/
+/* This code was worked on by:
+ * Joshua Johnson
+ * Austin Jackson
+ * Jerod Muilenburg
+ */
 #include <functional>
 #include <sstream> // for the tokenizer
 #include <iostream>
-#include <stdexcept>
-#include "item.hpp"    
-#include "location.hpp"
-#include "npc.hpp"     
+#include <stdexcept>    
 #include "game.hpp"
 
 
@@ -149,7 +145,7 @@ Location::Location(){
 	this->name = "Default location";
 	this->desc = "This is the default location";
 	this->visited = false;
-   	this->neighbors = std::map<std::string, std::reference_wrapper<Location>>();
+   	this->neighbors = std::map<std::string, Location*>();
    	this->items = std::vector<Item>();
    	this->npcs = std::vector<NPC>();
 }
@@ -157,7 +153,7 @@ Location::Location(const std::string &name, const std::string &desc){
 	this->name = name;
 	this->desc = desc;
 	this->visited = false;
-	this->neighbors = std::map<std::string, std::reference_wrapper<Location>>();
+	this->neighbors = std::map<std::string, Location*>();
         this->items = std::vector<Item>();
         this->npcs = std::vector<NPC>();
 }	
@@ -173,7 +169,7 @@ bool Location::getVisited() const{
 	return this->visited;
 }
 
-std::map<std::string, std::reference_wrapper<Location>> Location::getLocations() const{
+std::map<std::string, Location*> Location::getLocations() const{
 	return neighbors;
 }
 
@@ -236,7 +232,7 @@ void Location::addLocation(const std::string& direction, Location& location) {
 	}
 
 	// Add the new direction and location to the map
-	neighbors[direction] = location;
+	neighbors[direction] = &location; //store a pointer to the location object
 }
 
 
@@ -244,20 +240,30 @@ void Location::addLocation(const std::string& direction, Location& location) {
 //################ Game ###############
 
 
-Game::Game() {
+Game::Game() :
+	//create locations
+	pac("Performing Art Center", "The music building. There are practice rooms, classrooms, and a performance hall."),
+	kirkoff("Kirkhoff Center", "The student union. There are restaurants, a store, and places to congregate."),
+	library("Mary Idema Pew Library", "Books! Books! Get your books here! There are lots of places to study here."),
+	zumberge("Zumberge Hall", "Business business business... numbers... is this working??"),
+	clockTower("The Clock Tower", "Ding Dong Ding Dong... Ding Dong Ding Dong... Time to get to class! "),
+	transLink("Transformational Link Sculpture", "They say if you walk underneath, you'll fail your exams!"),
+	blueBridge("Blue Bridge", "Caution bridge may be icy."),
+	mak("Mackinac Hall", "Why are all my classes in the same building? This place is a labrynth")
+{
 
 	// Set default values, Create the world and set the initial values for game variables
 	std::vector<Item> inv;
-	std::vector<Location> loc;
+	std::vector<std::reference_wrapper<Location>> loc;
 	this->inventory = inv;
 	this->locations = loc;
 	this->currentWeight = 0;
 	this->caloriesNeeded = 1000;
 	this->gameInProgress = true;
-
+	
 	this->createWorld();
 
-	this->currentLocation = this->randomLocation();
+	this->currentLocation = &(this->randomLocation());
 	commands = setupCommands();
 }
 
@@ -265,18 +271,7 @@ Game::Game() {
 
 // Create the world with Locations, Items, and NPCs
 void Game::createWorld() {
-  	//create locations, link locations, create items/NPCs, place items/NPCs in locations, add locations to locations vector. 
-
-    //create locations
-	Location pac("Performing Art Center", "The music building. There are practice rooms, classrooms, and a performance hall.");
-	Location kirkoff("Kirkhoff Center", "The student union. There are restaurants, a store, and places to congregate.");
-	Location library("Mary Idema Pew Library", "Books! Books! Get your books here! There are lots of places to study here.");
-	Location zumberge("Zumberge Hall", "Business business business... numbers... is this working??");
-	Location clockTower("The Clock Tower", "Ding Dong Ding Dong... Ding Dong Ding Dong... Time to get to class! ");
-	Location transLink("Transformational Link Sculpture", "They say if you walk underneath, you'll fail your exams!");
-	Location blueBridge("Blue Bridge", "Caution bridge may be icy.");
-	Location mak("Mackinac Hall", "Why are all my classes in the same building? This place is a labrynth");
-
+  	//link locations, create items/NPCs, place items/NPCs in locations, add locations to locations vector. 
 
 	//link locations
 	pac.addLocation("east", kirkoff);
@@ -296,7 +291,7 @@ void Game::createWorld() {
 	blueBridge.addLocation("south", mak);
 	mak.addLocation("north", blueBridge);
 
-
+	//This chuck of code was expedited by ChatGPT
 	//create items
 	Item practiceSheetMusic("Practice Sheet Music", "A set of sheet music for a challenging piece. You can practice it to improve your musical skills.", 0, 0.2f);
 	Item kirkhoffSnack("Snack from Java City", "A quick snack from the Java City cafe. It's a small boost to your energy.", 150, 0.1f);
@@ -322,7 +317,7 @@ void Game::createWorld() {
 	clockTower.addItem(chowMein);
 	pac.addItem(subSandwich);
 
-	//create NPCs
+	//create NPCs was expedited by ChatGPT
 
 	//Philomena Mantella (President Mantella)
 	NPC mantella("Philomena Mantella", "Philomena Mantella, the glamorous yet secretively sinister president of the university. She rules with an iron fist, using her wealth and influence to manipulate everyone around her.");
@@ -395,16 +390,16 @@ void Game::createWorld() {
 
 
 	//add locations to locations vector
-	this->locations.push_back(pac);
-	this->locations.push_back(kirkoff);
-	this->locations.push_back(library);
-	this->locations.push_back(zumberge);
-	this->locations.push_back(clockTower);
-	this->locations.push_back(transLink);
-	this->locations.push_back(blueBridge);
-	this->locations.push_back(mak);
+	this->locations.push_back(std::ref(pac));
+	this->locations.push_back(std::ref(kirkoff));
+	this->locations.push_back(std::ref(library));
+	this->locations.push_back(std::ref(zumberge));
+	this->locations.push_back(std::ref(clockTower));
+	this->locations.push_back(std::ref(transLink));
+	this->locations.push_back(std::ref(blueBridge));
+	this->locations.push_back(std::ref(mak));
 
-	Location l = this->randomLocation();
+	Location& l = this->randomLocation();
 	l.addNPC(magicElf);
 	this->elfLocation = l;
 }
@@ -431,7 +426,7 @@ CommandMap Game::setupCommands(){
 	commands["look"] = [this](std::vector<std::string> target)	{ look(target); };
 	commands["quit"] = [this](std::vector<std::string> target)	{ quit(target); };
 
-	//create alternatives words for each command
+	//create alternatives words for each command //This chuck of code was expedited by ChatGPT
 	std::vector<std::string> help_commands = {"?", "h", "how", "commands", "showCommands", "Help", "HELP", "info", "instructions", "guide"};//all assigned to showHelp()
 	for (const std::string& c : help_commands) { commands[c] = commands["help"]; }
 
@@ -466,7 +461,7 @@ CommandMap Game::setupCommands(){
 // Location& to return a reference not a copy
 Location& Game::randomLocation() {
 	int index = rand() % this->locations.size(); // Select a random index
-	return this->locations[index];
+	return this->locations[index].get();
 }
 
 // Helper method to split commands into tokens
@@ -526,16 +521,19 @@ void Game::showHelp(std::vector<std::string> target) {
 
 // Command to take an item
 void Game::take(std::vector<std::string> target) {
-	throw std::logic_error("Function needs to remove items from the location. Implement Location.removeItem()");
+	
 	if (target.empty()) {
 		std::cout << "Take what?\n";
 		return;
 	}
-
-	std::string item_name = target[0];
+	
+	std::string item_name = target[0]; // Assume the target is the item name
+	for(int i = 1; i<target.size(); i++){
+		item_name += " " + target[i];
+	} 
 	bool item_found = false;
 	Item chosen_item;
-	for (auto& item : this->currentLocation.getItems()) {
+	for (auto& item : (*this->currentLocation).getItems()) {
 		if (item.getName() == item_name) {
 			this->inventory.push_back(item);
 			this->currentWeight += item.getWeight();
@@ -549,7 +547,8 @@ void Game::take(std::vector<std::string> target) {
 		std::cout << "Item not found in this location.\n";
 		return;
 	}
-	this->currentLocation.removeItem(chosen_item);
+	(*this->currentLocation).removeItem(chosen_item);
+	this->currentWeight += chosen_item.getWeight();
 	
 }
 
@@ -565,11 +564,14 @@ void Game::give(std::vector<std::string> target) {
 		return;
 	}
 	std::string item_name = target[0]; // Assume the target is the item name
+	for(int i = 1; i<target.size(); i++){
+		item_name += " " + target[i];
+	} 
 	bool item_found = false;
 	Item chosen_item;
 	for (auto& item : this->inventory) {
 		if (item.getName() == item_name) {
-			this->currentLocation.addItem(item);
+			(*this->currentLocation).addItem(item);
 			this->currentWeight -= item.getWeight();
 			// check if we are in the woods
 			chosen_item = item;
@@ -583,6 +585,7 @@ void Game::give(std::vector<std::string> target) {
 		return;
 	}
 	this->inventory.erase(std::remove(this->inventory.begin(), this->inventory.end(), chosen_item), this->inventory.end());
+	this->currentWeight -= chosen_item.getWeight();
 }
 
 // Command to move to a different location
@@ -593,11 +596,11 @@ void Game::go(std::vector<std::string> target) {
 	}
 
 	std::string direction = target[0];
-	auto neighbors = this->currentLocation.getLocations();
+	auto neighbors = (*this->currentLocation).getLocations();
 
 	if (neighbors.find(direction) != neighbors.end()) {
 		this->currentLocation = neighbors[direction]; // Move to new location
-		std::cout << "You are now at " << this->currentLocation.getName() << ".\n";
+		std::cout << "You are now at " << (*this->currentLocation).getName() << ".\n";
 	} else {
 		std::cout << "There is no path in that direction.\n";
 	}
@@ -605,7 +608,7 @@ void Game::go(std::vector<std::string> target) {
 
 // Command to look around in the current location
 void Game::look(std::vector<std::string> target) {
-	std::cout << this->currentLocation << "\n"; // Uses overloaded << operator for Location
+	std::cout << (*this->currentLocation) << "\n"; // Uses overloaded << operator for Location
 }
 //Command get the description of target npc
 void Game::meet(std::vector<std::string> target){
@@ -614,7 +617,7 @@ void Game::meet(std::vector<std::string> target){
 		return;
 	}
 	std::string npc_name = target[0];
-	for (auto& npc : this->currentLocation.getNPCs()) {
+	for (auto& npc : (*this->currentLocation).getNPCs()) {
 		if (npc.getName() == npc_name) {
 			std::cout << npc.getDescription() << "\n";
 			return;
@@ -630,7 +633,7 @@ void Game::talk(std::vector<std::string> target) {
 	}
 
 	std::string npc_name = target[0];
-	for (auto& npc : this->currentLocation.getNPCs()) {
+	for (auto& npc : (*this->currentLocation).getNPCs()) {
 		if (npc.getName() == npc_name) {
 			std::cout << npc.getMessage() << "\n";
 			return;
@@ -646,7 +649,7 @@ void Game::showItems(std::vector<std::string> target) {
 	for (const auto& item : inventory) {
 		std::cout << item << "\n";
 	}
-	std::cout << "Total weight: " << this->currentWeight << " lbs\n";
+	std::cout << "Total weight: " << this->currentWeight << " lbs" << std::endl;
 }
 // Command to quit the game
 void Game::quit(std::vector<std::string> target) {

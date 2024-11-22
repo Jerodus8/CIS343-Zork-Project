@@ -1,3 +1,8 @@
+/* This code was worked on by:
+ * Joshua Johnson
+ * Austin Jackson
+ * Jerod Muilenburg
+ */
 #ifndef __H__GAME__
 #define __H__GAME__
 
@@ -15,6 +20,15 @@
 
 
 class Game {
+public:
+	Location pac;
+    Location kirkoff;
+    Location library;
+    Location zumberge;
+    Location clockTower;
+    Location transLink;
+    Location blueBridge;
+    Location mak;
 private:
 	// Map of commands (command name -> function)
 
@@ -26,10 +40,10 @@ private:
 
 	// Locations in the world
 	// using pointers so to not store by copy
-	std::vector<Location> locations;
+	std::vector<std::reference_wrapper<Location>> locations;
 
 	// Current location of the player
-	Location currentLocation;
+	Location* currentLocation;
 	
 	//location of the elf
 	Location elfLocation;
