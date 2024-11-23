@@ -178,7 +178,7 @@ std::map<std::string, Location*> Location::getLocations() const{
 std::vector<Item> Location::getItems(){
 	return this->items;
 }
-std::vector<NPC> Location::getNPCs(){
+std::vector<NPC>& Location::getNPCs(){
 	return this->npcs;
 }
         
@@ -321,7 +321,7 @@ void Game::createWorld() {
 	//create NPCs was expedited by ChatGPT
 
 	//Philomena Mantella (President Mantella)
-	NPC mantella("Philomena Mantella", "Philomena Mantella, the glamorous yet secretively sinister president of the university. She rules with an iron fist, using her wealth and influence to manipulate everyone around her.");
+	NPC mantella("Philomena Mantella", "Philomena Mantella, the glamorous yet secretively sinister president of the university.\nShe rules with an iron fist, using her wealth and influence to manipulate everyone around her.");
 	mantella.addMessage("You are merely a pawn in my grand design!");
 	mantella.addMessage("Isn't it nice to have power and money? You wouldn't understand.");
 	mantella.addMessage("You think the university cares about students? It's all about the profits!");
@@ -329,8 +329,8 @@ void Game::createWorld() {
 	mantella.addMessage("Careful what you say around me, student. I have ways of making things disappear.");
 
     //Louie the Laker
-	NPC louie("Louie the Laker", 
-    "Louie the Laker, the school's proud mascot. He's a big, muscly laker man full of energy and spirit. "
+	NPC louie("Louie the Laken", 
+    "Louie the Laker, the school's proud mascot. He's a big, muscly laker man full of energy and spirit.\n"
     "Known for his towering presence, he's always ready to get the crowd fired up!");
 
 	// Add dialogue options for Louie the Laker
@@ -342,9 +342,9 @@ void Game::createWorld() {
 
 	//Dr. Woodring
 	NPC woodring("Dr. Woodring", 
-	    "Dr. Woodring, the professor of Structure of Programming Languages. He's a scholar of the intricacies and theories behind "
-	    "programming languages, from syntax and semantics to parsing and compilers. His passion for the subject is evident, but he’s "
-	    "known for his demanding lectures and high expectations. A challenging but rewarding professor.");
+	    "Dr. Woodring, the professor of Structure of Programming Languages.\nHe's a scholar of the intricacies and theories behind "
+	    "programming languages, from syntax and semantics to parsing and compilers.\nHis passion for the subject is evident, but he’s "
+	    "known for his demanding lectures and high expectations.\nA challenging but rewarding professor.");
 
 	// Add dialogue options for Dr. Woodring
 	woodring.addMessage("Well that's as different as a caterpillar from an ostrich.");
@@ -354,8 +354,8 @@ void Game::createWorld() {
 
 	// Define NPC: Burger King Man
 	NPC burgerKingMan("Burger King Man", 
-	    "Burger King Man, the bizarre and unsettling figure who roams the campus dressed in a giant Burger King crown. "
-	    "With an enigmatic, often cryptic smile, he's known for making strange appearances at unexpected times. No one quite knows why he's here, "
+	    "Burger King Man, the bizarre and unsettling figure who roams the campus dressed in a giant Burger King crown.\n"
+	    "With an enigmatic, often cryptic smile, he's known for making strange appearances at unexpected times.\n No one quite knows why he's here, "
 	    "but his oddball behavior always leaves an impression.");
 
 	// Add dialogue options for Burger King Man
@@ -369,9 +369,9 @@ void Game::createWorld() {
 
 	// Define NPC: Magic Elf (Quest version)
 	NPC magicElf("Elandor the Magic Elf", 
-	    "Elandor, a mischievous and wise magic elf, is the last hope to save the school from an ancient curse. "
-	    "In order to restore balance and protect the school, you must feed him enough sustenance. His magic requires a certain amount of calories, "
-	    "and only then will he reveal the secrets to stopping the curse. But he is a picky eater, and not all food is suitable for his powers.");
+	    "Elandor, a mischievous and wise magic elf, is the last hope to save the school from an ancient curse.\n"
+	    "In order to restore balance and protect the school, you must feed him enough sustenance.\nHis magic requires a certain amount of calories, "
+	    "and only then will he reveal the secrets to stopping the curse.\nBut he is a picky eater, and not all food is suitable for his powers.");
 
 	// Add dialogue options for Magic Elf
 	magicElf.addMessage("Ah, you’ve come to feed me, I see. But only the finest food will do for my magic!");
@@ -428,31 +428,31 @@ CommandMap Game::setupCommands(){
 	commands["quit"] = [this](std::vector<std::string> target)	{ quit(target); };
 
 	//create alternatives words for each command //This chuck of code was expedited by ChatGPT
-	std::vector<std::string> help_commands = {"?", "h", "how", "commands", "showCommands", "Help", "HELP", "info", "instructions", "guide"};//all assigned to showHelp()
+	std::vector<std::string> help_commands = {"?", "h", "how", "commands", "Help", "HELP", "info"};//all assigned to showHelp()
 	for (const std::string& c : help_commands) { commands[c] = commands["help"]; }
 
 	std::vector<std::string> talk_commands = {"talk", "speak", "chat", "converse", "discuss", "say", "ask", "dialogue"}; //all assigned to talk()
 	for (const std::string& c : talk_commands) { commands[c] = commands["talk"]; }
 
-	std::vector<std::string> meet_commands = {"meet", "greet", "encounter", "introduce", "sayHello", "connect", "meetUp", "join"};
+	std::vector<std::string> meet_commands = {"meet", "greet", "encounter"};
 	for (const std::string& c : meet_commands) { commands[c] = commands["meet"]; }
 
-	std::vector<std::string> take_commands = {"take", "grab", "pick", "collect", "obtain", "get", "acquire"}; //all assigned to take()
+	std::vector<std::string> take_commands = {"take", "grab", "pickup", "collect", "get"}; //all assigned to take()
 	for (const std::string& c : take_commands) { commands[c] = commands["take"]; }
 
-	std::vector<std::string> give_commands = {"give", "donate", "present", "offer", "hand", "pass", "transfer"}; //all assigned to give()
+	std::vector<std::string> give_commands = {"give", "donate", "offer", "hand", "pass", "transfer"}; //all assigned to give()
 	for (const std::string& c : give_commands) { commands[c] = commands["give"]; }
 
-	std::vector<std::string> go_commands = {"go", "move", "travel", "head", "leave", "walk", "advance", "proceed", "run"}; //all assigned to go()
+	std::vector<std::string> go_commands = {"go", "move", "travel", "walk", "proceed", "run"}; //all assigned to go()
 	for (const std::string& c : go_commands) { commands[c] = commands["go"]; }
 
-	std::vector<std::string> showItems_commands = {"showItems", "inventory", "items", "possessions", "things", "belongings", "checkItems"}; //all assigned to showItems()
+	std::vector<std::string> showItems_commands = {"inventory", "items", "possessions", "things", "belongings"}; //all assigned to showItems()
 	for (const std::string& c : showItems_commands) { commands[c] = commands["showItems"]; }
 
-	std::vector<std::string> look_commands = {"look", "see", "view", "examine", "observe", "inspect", "search", "checkOut"}; //all assigned to look()
+	std::vector<std::string> look_commands = {"look", "see", "view", "examine", "observe", "inspect", "search"}; //all assigned to look()
 	for (const std::string& c : look_commands) { commands[c] = commands["look"]; }
 
-	std::vector<std::string> quit_commands = {"quit", "exit", "leave", "end", "close", "stop", "terminate", "abandon"}; //all assigned to quit()
+	std::vector<std::string> quit_commands = {"quit", "exit", "leave", "end", "close", "stop", "terminate"}; //all assigned to quit()
 	for (const std::string& c : quit_commands) { commands[c] = commands["quit"]; }
 	
 	return commands;
@@ -509,11 +509,68 @@ void Game::play() {
 
 // Show help message and available commands
 void Game::showHelp(std::vector<std::string> target) {
-	std::cout << "Available commands:\n";
-	for (const auto& pair : commands) {
-		std::cout << "- " << pair.first << "\n";
-	}
-	
+	std::cout << "==================== Map ====================\n\n";
+
+	std::cout << "    Pac ------- Kirkoff -------- Library\n";
+	std::cout << "        |             |\n";
+	std::cout << "        |             |\n";
+	std::cout << "        |             |   \n";
+	std::cout << "    Zumberge --- CLock Tower\n";
+	std::cout << "        |                  \n";
+	std::cout << "        |             \n";
+	std::cout << "        |                    \n";
+	std::cout << "    TransLink        \n";
+        std::cout << "        |                \n";
+        std::cout << "        |                \n";
+        std::cout << "        |                \n";
+        std::cout << "    Blue Bridge             |   \n";
+        std::cout << "        |                \n";
+        std::cout << "        |                \n";
+        std::cout << "        |               \n";
+        std::cout << "       Mak                \n";
+
+	std::cout << "=============================================\n";
+
+
+
+
+
+	// Help commands
+	std::cout << "Help Commands:\n";
+	std::cout << "  ?, h, how, commands, Help, HELP, info\n";
+	std::cout << "  - Use these commands to display this help guide.\n\n";
+
+	// Interaction commands
+	std::cout << "Interaction Commands:\n";
+	std::cout << "  talk, speak, chat, converse, discuss, say, ask, dialogue\n";
+	std::cout << "  - Use these commands to talk to NPCs.\n";
+	std::cout << "  meet, greet, encounter\n";
+	std::cout << "  - Use these commands to meet or interact with NPCs for the first time.\n\n";
+
+	// Item commands
+	std::cout << "Item Commands:\n";
+	std::cout << "  take, grab, pickup, collect, get\n";
+	std::cout << "  - Use these commands to pick up items.\n";
+	std::cout << "  give, donate, offer, hand, pass, transfer\n";
+	std::cout << "  - Use these commands to give an item to a location.\n\n";
+
+	// Navigation commands
+	std::cout << "Navigation Commands:\n";
+	std::cout << "  go, move, travel, walk, proceed, run\n";
+	std::cout << "  - Use these commands to move to a different location.\n";
+	std::cout << "  look, see, view, examine, observe, inspect, search\n";
+	std::cout << "  - Use these commands to look around or examine an item.\n\n";
+
+	// Inventory commands
+	std::cout << "Inventory Commands:\n";
+	std::cout << "  inventory, items, possessions, things, belongings\n";
+	std::cout << "  - Use these commands to view the items in your inventory.\n\n";
+
+	// Game control commands
+	std::cout << "Game Control Commands:\n";
+	std::cout << "  quit, exit, leave, end, close, stop, terminate\n";
+	std::cout << "  - Use these commands to quit the game.\n\n";
+
 	// Print current time
 	std::time_t current_time = std::time(nullptr);
 	std::cout << "Current time: " << std::ctime(&current_time) << std::endl;
@@ -601,7 +658,7 @@ void Game::go(std::vector<std::string> target) {
 
 	if (neighbors.find(direction) != neighbors.end()) {
 		this->currentLocation = neighbors[direction]; // Move to new location
-		std::cout << "You are now at " << (*this->currentLocation).getName() << ".\n";
+		std::cout << "\nYou are now at " << (*this->currentLocation).getName() << ".\n";
 	} else {
 		std::cout << "There is no path in that direction.\n";
 	}
@@ -609,6 +666,7 @@ void Game::go(std::vector<std::string> target) {
 
 // Command to look around in the current location
 void Game::look(std::vector<std::string> target) {
+	std::cout << "\n";
 	std::cout << (*this->currentLocation) << "\n"; // Uses overloaded << operator for Location
 }
 //Command get the description of target npc
@@ -618,8 +676,14 @@ void Game::meet(std::vector<std::string> target){
 		return;
 	}
 	std::string npc_name = target[0];
+	
+	// combining the target into one single string
+	for (size_t i = 1; i < target.size(); ++i) {
+		npc_name += " " + target[i];
+	}
 	for (auto& npc : (*this->currentLocation).getNPCs()) {
 		if (npc.getName() == npc_name) {
+			std::cout <<"\n";
 			std::cout << npc.getDescription() << "\n";
 			return;
 		}
@@ -634,8 +698,14 @@ void Game::talk(std::vector<std::string> target) {
 	}
 
 	std::string npc_name = target[0];
+	// combining the target into one single string
+        for (size_t i = 1; i < target.size(); ++i) {
+                npc_name += " " + target[i];
+        }
+
 	for (auto& npc : (*this->currentLocation).getNPCs()) {
 		if (npc.getName() == npc_name) {
+			std::cout <<"\n";
 			std::cout << npc.getMessage() << "\n";
 			return;
 		}
@@ -646,7 +716,7 @@ void Game::talk(std::vector<std::string> target) {
 
 // Command to show items in the player's inventory
 void Game::showItems(std::vector<std::string> target) {
-	std::cout << "You are carrying:\n";
+	std::cout << "\nYou are carrying:\n";
 	for (const auto& item : inventory) {
 		std::cout << item << "\n";
 	}
