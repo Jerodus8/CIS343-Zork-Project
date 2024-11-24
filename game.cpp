@@ -264,7 +264,7 @@ Game::Game() :
 	
 	this->createWorld();
 
-	this->currentLocation = &(this->randomLocation());
+	this->currentLocation = &(mak);
 	commands = setupCommands();
 }
 
@@ -461,8 +461,14 @@ CommandMap Game::setupCommands(){
 // Randomly select a Location
 // Location& to return a reference not a copy
 Location& Game::randomLocation() {
+	static bool seeded = false; // Ensure we only seed once
+	if (!seeded) {
+		srand(static_cast<unsigned>(time(0))); // Seed with the current time
+		seeded = true;
+	}
 	int index = rand() % this->locations.size(); // Select a random index
 	return this->locations[index].get();
+
 }
 
 // Helper method to split commands into tokens
@@ -523,7 +529,7 @@ void Game::showHelp(std::vector<std::string> target) {
         std::cout << "        |                \n";
         std::cout << "        |                \n";
         std::cout << "        |                \n";
-        std::cout << "    Blue Bridge             |   \n";
+        std::cout << "    Blue Bridge          \n";
         std::cout << "        |                \n";
         std::cout << "        |                \n";
         std::cout << "        |               \n";
@@ -613,9 +619,6 @@ void Game::take(std::vector<std::string> target) {
 // Command to give an item to the NPC or location
 
 
-//TODO ---- fix code
-//its not perfect code we need to look at the docs and check if we are in the woods
-
 void Game::give(std::vector<std::string> target) {
 	if (target.empty()) {
 		std::cout << "Give what?\n";
@@ -646,6 +649,65 @@ void Game::give(std::vector<std::string> target) {
 	this->currentWeight -= chosen_item.getWeight();
 }
 
+
+void printMap(const std::string& location) {
+    std::cout << "==================== Map ====================\n\n";
+
+	if (location == "Performing Art Center") {
+		std::cout << "    Pac (You are here) ------- Kirkoff -------- Library\n";
+	} else if (location == "Kirkhoff Center") {
+		std::cout << "    Pac ------- Kirkoff (You are here) -------- Library\n";
+	} else if (location == "Mary Idema Pew Library") {
+		std::cout << "    Pac ------- Kirkoff -------- Library (You are here)\n";
+	} else {
+		std::cout << "    Pac ------- Kirkoff -------- Library\n";
+	}
+
+	std::cout << "        |             |\n";
+	std::cout << "        |             |\n";
+	std::cout << "        |             |\n";
+
+	if (location == "Zumberge Hall") {
+		std::cout << "    Zumberge (You are here) --- CLock Tower\n";
+	} else if (location == "The Clock Tower") {
+		std::cout << "    Zumberge --- CLock Tower (You are here)\n";
+	} else {
+		std::cout << "    Zumberge --- CLock Tower\n";
+	}
+
+	std::cout << "        |                  \n";
+	std::cout << "        |             \n";
+	std::cout << "        |                    \n";
+
+	if (location == "Transformational Link Sculpture") {
+		std::cout << "    TransLink (You are here)       \n";
+	} else {
+		std::cout << "    TransLink        \n";
+	}
+
+	std::cout << "        |                \n";
+	std::cout << "        |                \n";
+	std::cout << "        |                \n";
+
+	if (location == "Blue Bridge") {
+		std::cout << "    Blue Bridge (You are here)         \n";
+	} else {
+		std::cout << "    Blue Bridge          \n";
+	}
+
+	std::cout << "        |                \n";
+	std::cout << "        |                \n";
+	std::cout << "        |               \n";
+
+	if (location == "Mackinac Hall") {
+		std::cout << "       Mak (You are here)               \n";
+	} else {
+		std::cout << "       Mak                \n";
+	}
+
+	std::cout << "\n=============================================\n";
+}
+
 // Command to move to a different location
 void Game::go(std::vector<std::string> target) {
 	if (target.empty()) {
@@ -659,6 +721,7 @@ void Game::go(std::vector<std::string> target) {
 	if (neighbors.find(direction) != neighbors.end()) {
 		this->currentLocation = neighbors[direction]; // Move to new location
 		std::cout << "\nYou are now at " << (*this->currentLocation).getName() << ".\n";
+		printMap(((*this->currentLocation).getName()));
 	} else {
 		std::cout << "There is no path in that direction.\n";
 	}
@@ -683,6 +746,21 @@ void Game::meet(std::vector<std::string> target){
 	}
 	for (auto& npc : (*this->currentLocation).getNPCs()) {
 		if (npc.getName() == npc_name) {
+			if (npc.getName() == "Dr. Woodring"){
+				    std::cout << "            (\\_/)\n"
+              << "           ( UwU )\n"
+              << "       ＿ノ ヽ ノ＼＿ \n"
+              << "      /　`/ ⌒Ｙ⌒ Ｙ　 \\\n"
+              << "     ( 　(三ヽ人　 /　 |\n"
+              << "     |　ﾉ⌒＼ ￣￣ヽ　 ノ\n"
+              << "     ヽ＿＿＿＞､＿＿／\n"
+              << "          ｜( 王 ﾉ〈 \n"
+              << "           /ﾐ`ー―彡\\ \n"
+              << "         |╰         ╯| \n"
+              << "        |     /\\     |\n"
+              << "        |    /  \\    |\n"
+              << "        |   /   \\    |\n";
+			}	    
 			std::cout <<"\n";
 			std::cout << npc.getDescription() << "\n";
 			return;

@@ -23,7 +23,6 @@ class Location
 private:
 	std::string name;
 	std::string desc;
-	//map<direction, Location>, very similar to dict
 	std::map<std::string, Location*> neighbors;
 	std::vector<Item> items;
 	std::vector<NPC> npcs;
